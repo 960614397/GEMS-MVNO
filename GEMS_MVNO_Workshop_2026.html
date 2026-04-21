@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEMS Mobile · MVNO Workshop 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal:#00A9A5;--teal-d:#007F7C;--teal-l:#4ECDC9;
+    --orange:#F4821F;--red:#E63329;--green:#5CB85C;--purple:#7B4F9E;
+    --dark:#0D1117;--dark2:#161B22;--dark3:#1C2333;
+    --light:#F8FAFC;--border:#E2E8F0;--muted:#718096;--white:#FFFFFF;
+    --nav:68px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--white);color:#1A202C;overflow-x:hidden;}
+
+  /* LOCKSCREEN */
+  #ls{position:fixed;inset:0;z-index:9999;background:var(--dark);display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .ll{margin-bottom:2rem;}
+  .lc{background:var(--dark3);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:420px;text-align:center;}
+  .li{width:56px;height:56px;background:rgba(0,169,165,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:1.5rem;}
+  .lc h2{font-size:1.35rem;font-weight:600;color:var(--white);margin-bottom:.5rem;}
+  .lc p{font-size:.875rem;color:rgba(255,255,255,.5);line-height:1.5;margin-bottom:1.75rem;}
+  .lc input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.8rem 1rem;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.9rem;margin-bottom:.75rem;outline:none;transition:border-color .2s;}
+  .lc input:focus{border-color:var(--teal);}
+  .lc input::placeholder{color:rgba(255,255,255,.3);}
+  .lb{width:100%;background:var(--teal);color:var(--white);border:none;border-radius:8px;padding:.85rem 1.5rem;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .2s;margin-top:.25rem;}
+  .lb:hover{background:var(--teal-d);}
+  #le{display:none;color:#FC8181;font-size:.8rem;margin-top:.75rem;}
+  .lf{margin-top:2rem;color:rgba(255,255,255,.25);font-size:.75rem;display:flex;align-items:center;gap:.4rem;}
+
+  /* NAV */
+  #nav{display:flex;position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:var(--nav);align-items:center;padding:0 2rem;gap:2rem;}
+  .nb{display:flex;align-items:center;gap:.75rem;text-decoration:none;flex-shrink:0;}
+  .nbadge{background:var(--teal);color:var(--white);font-size:.7rem;font-weight:700;padding:.2rem .55rem;border-radius:20px;letter-spacing:.05em;text-transform:uppercase;}
+  .nl{display:flex;align-items:center;gap:.25rem;margin-left:auto;list-style:none;}
+  .nl a{text-decoration:none;color:#4A5568;font-size:.875rem;font-weight:500;padding:.45rem .75rem;border-radius:6px;transition:color .15s,background .15s;}
+  .nl a:hover{color:var(--teal);background:rgba(0,169,165,.06);}
+  .ncta{margin-left:1rem;background:var(--teal)!important;color:var(--white)!important;padding:.5rem 1.25rem!important;border-radius:8px!important;font-weight:600!important;}
+  .ncta:hover{background:var(--teal-d)!important;}
+
+  /* ALL SECTIONS HIDDEN UNTIL LOGIN */
+  .locked-hidden{display:none!important;}
+
+  /* HERO */
+  #hero{min-height:100vh;background:var(--dark);padding-top:var(--nav);position:relative;overflow:hidden;}
+  .hbg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 65% 50%,rgba(0,169,165,.12) 0%,transparent 70%),radial-gradient(ellipse 40% 40% at 20% 80%,rgba(244,130,31,.06) 0%,transparent 60%);pointer-events:none;}
+  .hgg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
+  .hi{max-width:1200px;margin:0 auto;padding:5rem 2rem 4rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;position:relative;z-index:2;}
+  .htag{display:inline-flex;align-items:center;background:rgba(0,169,165,.15);border:1px solid rgba(0,169,165,.3);color:var(--teal-l);font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.35rem .9rem;border-radius:20px;margin-bottom:1.75rem;}
+  .hh1{font-family:'Playfair Display',serif;font-size:clamp(2.6rem,4vw,3.8rem);font-weight:800;color:var(--white);line-height:1.1;margin-bottom:1.5rem;letter-spacing:-.02em;}
+  .hh1 em{font-style:italic;color:var(--teal-l);}
+  .hsub{font-size:1rem;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:2rem;max-width:480px;}
+  .hbtns{display:flex;gap:1rem;flex-wrap:wrap;}
+  .btp{background:var(--teal);color:var(--white);border:none;border-radius:8px;padding:.8rem 1.6rem;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;text-decoration:none;transition:background .2s,transform .15s;display:inline-flex;align-items:center;gap:.4rem;}
+  .btp:hover{background:var(--teal-d);transform:translateY(-1px);}
+  .btg{background:transparent;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.8rem 1.6rem;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;text-decoration:none;transition:border-color .2s,color .2s;}
+  .btg:hover{border-color:rgba(255,255,255,.4);color:var(--white);}
+  .hstats{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:3rem;padding-top:2.5rem;border-top:1px solid rgba(255,255,255,.08);}
+  .snum{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--teal-l);line-height:1;}
+  .slbl{font-size:.78rem;color:rgba(255,255,255,.4);margin-top:.25rem;line-height:1.3;}
+  .hv{display:flex;justify-content:center;align-items:center;position:relative;}
+  .pf{background:var(--dark3);border:2px solid rgba(255,255,255,.1);border-radius:32px;width:260px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.05);position:relative;z-index:2;}
+  .ph{background:var(--teal);padding:1rem 1.25rem 1.25rem;}
+  .ps{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;font-size:.7rem;font-weight:700;color:rgba(255,255,255,.8);font-family:'DM Mono',monospace;}
+  .pw{font-size:.7rem;color:rgba(255,255,255,.7);}
+  .pb2{font-family:'DM Sans',sans-serif;font-weight:700;font-size:1rem;color:var(--white);letter-spacing:.02em;}
+  .pbd{padding:1rem 1.25rem;display:flex;flex-direction:column;gap:.75rem;}
+  .pbc{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:.9rem 1rem;}
+  .bll{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:.25rem;font-family:'DM Mono',monospace;}
+  .bln{font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:var(--white);line-height:1;}
+  .bls{font-size:.65rem;color:rgba(255,255,255,.4);margin-top:.2rem;}
+  .pr{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.05);}
+  .pr:last-child{border-bottom:none;}
+  .prl{font-size:.72rem;color:rgba(255,255,255,.5);}
+  .prv{font-size:.72rem;font-weight:600;color:var(--white);}
+  .tg{background:rgba(92,184,92,.2);color:#68D391;font-size:.65rem;padding:.15rem .5rem;border-radius:20px;font-weight:600;}
+  .tt{background:rgba(0,169,165,.2);color:var(--teal-l);font-size:.65rem;padding:.15rem .5rem;border-radius:20px;font-weight:600;}
+  .pglow{position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(0,169,165,.2) 0%,transparent 70%);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;pointer-events:none;}
+
+  /* COMMON */
+  .si{max-width:1200px;margin:0 auto;padding:5rem 2rem;}
+  .sl{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+  .sl::before{content:'';display:inline-block;width:20px;height:2px;background:var(--teal);border-radius:2px;}
+  .sh2{font-family:'Playfair Display',serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:700;line-height:1.15;letter-spacing:-.02em;margin-bottom:1.25rem;}
+  .sint{font-size:1rem;color:var(--muted);line-height:1.7;max-width:640px;margin-bottom:3rem;}
+  .dk{background:var(--dark);color:var(--white);}
+  .dk .sl{color:var(--teal-l);}
+  .dk .sint{color:rgba(255,255,255,.55);}
+  .dk .sh2{color:var(--white);}
+  .lt{background:var(--white);}
+  .al{background:var(--light);}
+
+  /* DSG SECTION */
+  .tl{position:relative;padding-left:1.5rem;border-left:2px solid rgba(0,169,165,.3);display:flex;flex-direction:column;gap:1.5rem;}
+  .tl-i{position:relative;}
+  .tl-i::before{content:'';position:absolute;left:-1.75rem;top:.3rem;width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 3px rgba(0,169,165,.2);}
+  .ty{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--teal-l);font-weight:500;margin-bottom:.15rem;}
+  .tt2{font-size:.875rem;color:rgba(255,255,255,.7);line-height:1.5;}
+  .sg{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:3rem;}
+  .sc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:1.5rem;}
+  .sc .num{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;color:var(--teal-l);line-height:1;}
+  .sc .lbl{font-size:.8rem;color:rgba(255,255,255,.4);margin-top:.4rem;line-height:1.4;}
+
+  /* WHY */
+  .fd{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:3rem;}
+  .dc{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1rem;border-top:3px solid var(--teal);}
+  .di{font-size:1.5rem;margin-bottom:.75rem;}
+  .dt{font-size:.85rem;font-weight:700;color:#2D3748;margin-bottom:.4rem;}
+  .dd{font-size:.78rem;color:var(--muted);line-height:1.5;}
+  .mr{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-bottom:3rem;}
+  .mb2{background:var(--dark);border-radius:12px;padding:1.5rem;text-align:center;}
+  .mb2 .num{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:700;color:var(--teal-l);line-height:1;}
+  .mb2 .lbl{font-size:.75rem;color:rgba(255,255,255,.45);margin-top:.4rem;line-height:1.4;}
+  .cb{background:var(--dark);color:var(--white);border-radius:16px;padding:2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap;}
+  .ct{font-family:'Playfair Display',serif;font-size:1.5rem;font-style:italic;color:var(--white);max-width:600px;line-height:1.4;}
+
+  /* CVP */
+  .cg{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;}
+  .nc2{display:flex;flex-direction:column;gap:1rem;}
+  .ncd{display:flex;gap:1rem;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem;align-items:flex-start;transition:all .2s;}
+  .ncd:hover{box-shadow:0 4px 20px rgba(0,169,165,.08);border-color:rgba(0,169,165,.2);}
+  .nb2{background:var(--teal);color:var(--white);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;}
+  .ncc h4{font-size:.9rem;font-weight:700;color:#2D3748;margin-bottom:.3rem;}
+  .ncc p{font-size:.8rem;color:var(--muted);line-height:1.5;}
+  .vt{width:100%;border-collapse:collapse;margin-bottom:2rem;}
+  .vt td{padding:.85rem 1rem;font-size:.85rem;border-bottom:1px solid var(--border);}
+  .vt td:first-child{font-weight:700;color:#2D3748;width:30%;}
+  .vt td:last-child{color:var(--muted);}
+  .ag{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2rem;}
+  .ac{background:var(--light);border-radius:12px;padding:1.25rem;border:1px solid var(--border);}
+  .ac h4{font-size:.85rem;font-weight:700;color:#2D3748;margin-bottom:.35rem;}
+  .ac p{font-size:.78rem;color:var(--muted);line-height:1.5;}
+
+  /* VAS */
+  .vc{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:3rem;}
+  .vcard{background:var(--dark3);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:1.25rem;transition:border-color .2s,transform .2s;}
+  .vcard:hover{border-color:rgba(0,169,165,.3);transform:translateY(-2px);}
+  .vi{font-size:1.5rem;margin-bottom:.75rem;}
+  .vcard h4{font-size:.875rem;font-weight:700;color:var(--white);margin-bottom:.4rem;}
+  .vcard p{font-size:.775rem;color:rgba(255,255,255,.5);line-height:1.5;margin-bottom:.75rem;}
+  .vtgs{display:flex;gap:.4rem;flex-wrap:wrap;}
+  .vtg{font-size:.65rem;font-weight:600;padding:.2rem .5rem;border-radius:20px;background:rgba(0,169,165,.15);color:var(--teal-l);}
+  .vtgo{background:rgba(244,130,31,.15);color:#FBD38D;}
+  .vo{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:3rem;}
+  .oc{display:flex;gap:.75rem;align-items:flex-start;background:rgba(255,255,255,.04);border-radius:10px;padding:1rem;border:1px solid rgba(255,255,255,.06);}
+  .oi{font-size:1.25rem;flex-shrink:0;}
+  .oc h4{font-size:.82rem;font-weight:700;color:var(--white);margin-bottom:.2rem;}
+  .oc p{font-size:.75rem;color:rgba(255,255,255,.45);line-height:1.4;}
+
+  /* TABLES */
+  .dt2{width:100%;border-collapse:collapse;background:var(--white);border-radius:12px;overflow:hidden;border:1px solid var(--border);font-size:.85rem;}
+  .dt2 th{background:var(--light);padding:.85rem 1rem;text-align:left;font-weight:700;color:#4A5568;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);}
+  .dt2 td{padding:.85rem 1rem;border-bottom:1px solid var(--border);color:#4A5568;line-height:1.4;}
+  .dt2 tr:last-child td{border-bottom:none;}
+  .dt2 tr:hover td{background:var(--light);}
+  .dtd{background:var(--dark3);border-color:rgba(255,255,255,.07);}
+  .dtd th{background:rgba(255,255,255,.04);color:rgba(255,255,255,.5);border-bottom-color:rgba(255,255,255,.07);}
+  .dtd td{border-bottom-color:rgba(255,255,255,.05);color:rgba(255,255,255,.7);}
+  .dtd tr:hover td{background:rgba(255,255,255,.03);}
+
+  /* CYBER */
+  .tc{display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+  .fl{list-style:none;display:flex;flex-direction:column;gap:.6rem;}
+  .fl li{display:flex;gap:.6rem;align-items:flex-start;font-size:.875rem;color:rgba(255,255,255,.7);line-height:1.5;}
+  .fl li::before{content:'✓';color:var(--teal);font-weight:700;flex-shrink:0;margin-top:.05rem;}
+  .fl.fl2 li{color:#4A5568;}
+  .stt{font-size:1rem;font-weight:700;color:var(--white);margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid rgba(255,255,255,.08);}
+  .tcs{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.5rem;}
+  .tcc{background:rgba(0,169,165,.08);border:1px solid rgba(0,169,165,.2);border-radius:10px;padding:1rem;text-align:center;}
+  .tcn{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:700;color:var(--teal-l);margin-bottom:.35rem;}
+  .tcd{font-size:.75rem;color:rgba(255,255,255,.5);line-height:1.4;}
+
+  /* PARTNERS */
+  .pg{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+  .pc{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:1.75rem;transition:box-shadow .2s,transform .2s;}
+  .pc:hover{box-shadow:0 8px 30px rgba(0,0,0,.08);transform:translateY(-2px);}
+  .pi{font-size:2rem;margin-bottom:1rem;}
+  .pc h3{font-size:1rem;font-weight:700;color:#2D3748;margin-bottom:.35rem;}
+  .ps2{font-size:.75rem;color:var(--teal);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;}
+  .pc p{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;}
+  .ptgs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem;}
+  .pt{font-size:.65rem;font-weight:600;padding:.2rem .5rem;border-radius:20px;background:var(--light);color:var(--muted);border:1px solid var(--border);}
+  .pcl{font-size:.72rem;color:var(--muted);font-style:italic;}
+
+  /* USE CASES */
+  .ug{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;}
+  .uc{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.5rem;transition:border-color .2s,box-shadow .2s;}
+  .uc:hover{border-color:rgba(0,169,165,.3);box-shadow:0 4px 20px rgba(0,169,165,.06);}
+  .uch{display:flex;gap:.75rem;align-items:flex-start;margin-bottom:.75rem;}
+  .ui{font-size:1.5rem;flex-shrink:0;}
+  .uch h3{font-size:.95rem;font-weight:700;color:#2D3748;line-height:1.3;}
+  .uc p{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:.75rem;}
+  .uout{font-size:.78rem;color:var(--teal-d);font-weight:600;display:flex;align-items:flex-start;gap:.4rem;}
+
+  /* EVP */
+  .eg{display:grid;grid-template-columns:1fr 2fr;gap:3rem;align-items:start;}
+  .ep{display:flex;flex-direction:column;gap:1rem;}
+  .epc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:1.1rem 1.25rem;}
+  .epc h4{font-size:.875rem;font-weight:700;color:var(--white);margin-bottom:.25rem;}
+  .epc p{font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.5;}
+  .er{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+  .erc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:1.25rem;}
+  .erc h4{font-size:.85rem;font-weight:700;color:var(--teal-l);margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid rgba(255,255,255,.07);}
+  .erc ul{list-style:none;display:flex;flex-direction:column;gap:.4rem;}
+  .erc li{font-size:.78rem;color:rgba(255,255,255,.55);display:flex;gap:.4rem;align-items:flex-start;}
+  .erc li::before{content:'→';color:var(--teal);font-size:.7rem;flex-shrink:0;margin-top:.1rem;}
+
+  /* CX */
+  .cxg{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:2.5rem;}
+  .cxc{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem;}
+  .cxi{font-size:1.5rem;margin-bottom:.75rem;}
+  .cxc h4{font-size:.9rem;font-weight:700;color:#2D3748;margin-bottom:.35rem;}
+  .cxc p{font-size:.8rem;color:var(--muted);line-height:1.5;}
+  .cpp{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem;}
+  .cp{background:var(--light);border:1px solid var(--border);border-radius:20px;padding:.3rem .8rem;font-size:.78rem;color:#4A5568;font-weight:500;}
+
+  /* XANITE */
+  .xg{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:3rem;}
+  .xc{border-radius:12px;padding:1.5rem;border:1px solid;}
+  .xc.xb{background:rgba(0,169,165,.08);border-color:rgba(0,169,165,.2);}
+  .xc.xp{background:rgba(123,79,158,.08);border-color:rgba(123,79,158,.2);}
+  .xc.xv{background:rgba(99,102,241,.08);border-color:rgba(99,102,241,.2);}
+  .xc h4{font-size:.9rem;font-weight:700;color:var(--white);margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid rgba(255,255,255,.08);}
+  .xc ul{list-style:none;display:flex;flex-direction:column;gap:.45rem;}
+  .xc li{font-size:.8rem;color:rgba(255,255,255,.6);display:flex;gap:.5rem;}
+  .xc li::before{content:'·';color:var(--teal);font-weight:700;flex-shrink:0;}
+  .rr{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2rem;}
+  .ri{background:rgba(255,255,255,.04);border-radius:10px;padding:1rem 1.1rem;border:1px solid rgba(255,255,255,.06);position:relative;}
+  .ri::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal);border-radius:2px 2px 0 0;}
+  .ri h5{font-size:.82rem;font-weight:700;color:var(--white);margin-bottom:.35rem;}
+  .ri p{font-size:.75rem;color:rgba(255,255,255,.45);line-height:1.5;}
+
+  /* METHODOLOGY */
+  .trk{display:flex;gap:0;position:relative;margin-bottom:1.5rem;}
+  .trk::before{content:'';position:absolute;top:20px;left:0;right:0;height:2px;background:rgba(0,169,165,.3);}
+  .ts{flex:1;text-align:center;position:relative;}
+  .td{width:40px;height:40px;border-radius:50%;background:var(--dark3);border:2px solid var(--teal);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;font-size:.7rem;font-weight:700;color:var(--teal-l);font-family:'DM Mono',monospace;position:relative;z-index:2;}
+  .td.tg2{background:var(--teal);color:var(--dark);border-color:var(--teal-l);}
+  .tlbl{font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.3;}
+  .tlbl strong{display:block;color:var(--white);font-weight:600;margin-bottom:.2rem;}
+  .dg{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-top:2rem;}
+  .dc2{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:1.1rem;}
+  .dcode{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:700;color:var(--teal-l);margin-bottom:.35rem;}
+  .dtit{font-size:.82rem;font-weight:700;color:var(--white);margin-bottom:.35rem;}
+  .ddsc{font-size:.75rem;color:rgba(255,255,255,.45);line-height:1.4;}
+  .om{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;margin-top:2rem;}
+  .oc2{padding:1.5rem;border-right:1px solid rgba(255,255,255,.08);}
+  .oc2:last-child{border-right:none;}
+  .oc2 h4{font-size:.8rem;font-weight:700;color:var(--teal-l);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid rgba(255,255,255,.07);}
+  .oc2 ul{list-style:none;display:flex;flex-direction:column;gap:.4rem;}
+  .oc2 li{font-size:.78rem;color:rgba(255,255,255,.6);display:flex;gap:.4rem;}
+  .oc2 li::before{content:'—';color:rgba(255,255,255,.2);font-size:.7rem;flex-shrink:0;}
+
+  /* PRICING */
+  .prg{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:3rem;}
+  .prc{background:var(--white);border:2px solid var(--border);border-radius:16px;padding:1.75rem;transition:border-color .2s;position:relative;}
+  .prc.rec{border-color:var(--teal);box-shadow:0 0 0 4px rgba(0,169,165,.08);}
+  .rb{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--teal);color:var(--white);font-size:.65rem;font-weight:700;padding:.2rem .75rem;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+  .prc h3{font-size:1rem;font-weight:700;color:#2D3748;margin-bottom:.25rem;}
+  .psub{font-size:.78rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.4;}
+  .pm{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--teal);line-height:1;margin-bottom:.25rem;}
+  .pp{font-size:.75rem;color:var(--muted);margin-bottom:1.5rem;}
+  .pfl{list-style:none;display:flex;flex-direction:column;gap:.55rem;border-top:1px solid var(--border);padding-top:1.25rem;}
+  .pfl li{font-size:.82rem;color:#4A5568;display:flex;gap:.5rem;align-items:flex-start;}
+  .pfl li::before{content:'✓';color:var(--teal);font-weight:700;flex-shrink:0;}
+  .svct{width:100%;border-collapse:collapse;background:var(--white);border-radius:12px;overflow:hidden;border:1px solid var(--border);}
+  .svct th,.svct td{padding:.8rem 1rem;font-size:.82rem;text-align:center;border-bottom:1px solid var(--border);}
+  .svct th{background:var(--light);font-weight:700;color:#4A5568;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;}
+  .svct th:first-child,.svct td:first-child{text-align:left;font-weight:600;color:#4A5568;}
+  .svct td{color:var(--muted);}
+  .svct tr:last-child td{border-bottom:none;}
+  .svct tr:hover td{background:var(--light);}
+  .ck{color:var(--teal);font-weight:700;}
+  .cx2{color:#FC8181;}
+  .op{color:var(--muted);font-style:italic;font-size:.78rem;}
+
+  /* CTA */
+  .ctas{background:var(--teal);padding:5rem 2rem;text-align:center;}
+  .ctas h2{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:700;color:var(--white);margin-bottom:1rem;}
+  .ctas p{font-size:1rem;color:rgba(255,255,255,.8);max-width:600px;margin:0 auto 2rem;line-height:1.7;}
+  .ctab{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;}
+  .bw{background:var(--white);color:var(--teal);border:none;border-radius:8px;padding:.85rem 1.75rem;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;text-decoration:none;transition:transform .15s,box-shadow .15s;display:inline-block;}
+  .bw:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,.15);}
+  .bow{background:transparent;color:var(--white);border:2px solid rgba(255,255,255,.5);border-radius:8px;padding:.85rem 1.75rem;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;text-decoration:none;transition:border-color .2s;display:inline-block;}
+  .bow:hover{border-color:var(--white);}
+
+  /* FOOTER */
+  footer{background:var(--dark);color:rgba(255,255,255,.5);padding:3rem 2rem 2rem;}
+  .fi{max-width:1200px;margin:0 auto;}
+  .ft{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:2rem;}
+  .fb p{font-size:.82rem;line-height:1.6;margin-top:.75rem;max-width:280px;}
+  .fcol h5{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.7);margin-bottom:1rem;}
+  .fcol ul{list-style:none;display:flex;flex-direction:column;gap:.5rem;}
+  .fcol a{text-decoration:none;color:rgba(255,255,255,.4);font-size:.82rem;transition:color .15s;}
+  .fcol a:hover{color:var(--teal-l);}
+  .fbot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.75rem;}
+  .ftag{color:var(--teal);font-weight:600;}
+
+  @media(max-width:900px){
+    .fd,.mr,.sg,.vc,.vo,.cxg,.xg,.rr,.dg,.er,.tcs,.prg,.pg{grid-template-columns:1fr 1fr!important;}
+    .hi,.cg,.eg,.tc,.om,.ft{grid-template-columns:1fr!important;}
+    .ug{grid-template-columns:1fr!important;}
+    .nl{display:none;}
+  }
+  @media(max-width:600px){
+    .fd,.mr,.sg,.vc,.vo,.cxg,.xg,.rr,.dg,.er,.tcs,.prg,.pg,.ag,.trk{grid-template-columns:1fr!important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOCKSCREEN -->
+<div id="ls">
+  <div class="ll" style="background:rgba(255,255,255,0.92);border-radius:14px;padding:14px 22px;">
+    <svg viewBox="0 0 240 60" xmlns="http://www.w3.org/2000/svg" height="70" style="display:inline-block;vertical-align:middle;">
+  <text x="2" y="52" font-family="Georgia,Arial Black,sans-serif" font-weight="900" font-size="56" fill="white" letter-spacing="-2">2</text>
+  <g transform="translate(57,12)">
+    <circle cx="11" cy="0" r="4.5" fill="#E63329"/><circle cx="19" cy="5" r="4" fill="#E63329"/>
+    <circle cx="22" cy="14" r="4" fill="#F4821F"/><circle cx="19" cy="23" r="4" fill="#F4821F"/>
+    <circle cx="11" cy="28" r="4.5" fill="#5CB85C"/><circle cx="3" cy="23" r="4" fill="#5CB85C"/>
+    <circle cx="0" cy="14" r="4" fill="#00A9A5"/><circle cx="3" cy="5" r="4" fill="#1B4F9E"/>
+    <text x="6" y="19" font-family="Georgia,serif" font-weight="700" font-size="10" fill="white" text-anchor="middle">20</text>
+  </g>
+  <text x="85" y="38" font-family="Georgia,Arial,sans-serif" font-weight="700" font-size="30" fill="white" letter-spacing="-0.5">gems</text>
+  <line x1="85" y1="43" x2="238" y2="43" stroke="rgba(255,255,255,0.3)" stroke-width="0.6"/>
+  <text x="85" y="54" font-family="Arial,sans-serif" font-size="8.5" fill="rgba(255,255,255,0.6)" letter-spacing="0.3">Government Employees Medical Scheme</text>
+</svg>
+  </div>
+  <div class="lc">
+    <div class="li">🔒</div>
+    <h2>Access Document</h2>
+    <p>This document is confidential and for authorised recipients only.<br>Enter your access credentials to continue.</p>
+    <input type="text" id="lu" placeholder="Username" autocomplete="off">
+    <input type="password" id="lp" placeholder="Password">
+    <button class="lb" onclick="checkLock()">Access Document →</button>
+    <div id="le">Incorrect credentials. Please try again.</div>
+  </div>
+  <div class="lf">🔒 This document is password protected · Confidential · DSG / Broadbrand © 2026</div>
+</div>
+
+<!-- NAV -->
+<nav id="nav" class="locked-hidden">
+  <a href="#hero" class="nb">
+    <svg viewBox="0 0 240 60" xmlns="http://www.w3.org/2000/svg" height="52" style="display:inline-block;vertical-align:middle;">
+  <text x="2" y="52" font-family="Georgia,Arial Black,sans-serif" font-weight="900" font-size="56" fill="white" letter-spacing="-2">2</text>
+  <g transform="translate(57,12)">
+    <circle cx="11" cy="0" r="4.5" fill="#E63329"/><circle cx="19" cy="5" r="4" fill="#E63329"/>
+    <circle cx="22" cy="14" r="4" fill="#F4821F"/><circle cx="19" cy="23" r="4" fill="#F4821F"/>
+    <circle cx="11" cy="28" r="4.5" fill="#5CB85C"/><circle cx="3" cy="23" r="4" fill="#5CB85C"/>
+    <circle cx="0" cy="14" r="4" fill="#00A9A5"/><circle cx="3" cy="5" r="4" fill="#1B4F9E"/>
+    <text x="6" y="19" font-family="Georgia,serif" font-weight="700" font-size="10" fill="white" text-anchor="middle">20</text>
+  </g>
+  <text x="85" y="38" font-family="Georgia,Arial,sans-serif" font-weight="700" font-size="30" fill="white" letter-spacing="-0.5">gems</text>
+  <line x1="85" y1="43" x2="238" y2="43" stroke="rgba(255,255,255,0.3)" stroke-width="0.6"/>
+  <text x="85" y="54" font-family="Arial,sans-serif" font-size="8.5" fill="rgba(255,255,255,0.6)" letter-spacing="0.3">Government Employees Medical Scheme</text>
+</svg>
+    <span class="nbadge">MVNO 2026</span>
+  </a>
+  <ul class="nl">
+    <li><a href="#why">Why MVNOs</a></li>
+    <li><a href="#cvp">CVP</a></li>
+    <li><a href="#vas">VAS</a></li>
+    <li><a href="#usecases">Use Cases</a></li>
+    <li><a href="#evp">EVP</a></li>
+    <li><a href="#models">Models</a></li>
+    <li><a href="#methodology">Methodology</a></li>
+    <li><a href="#contact" class="ncta">Get in touch</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero" class="locked-hidden">
+  <div class="hbg"></div><div class="hgg"></div>
+  <div class="hi">
+    <div>
+      <div class="htag">Workshop · 21 April 2026 · Johannesburg</div>
+      <h1 class="hh1">A healthcare-led MVNO <em>built around</em> the GEMS member.</h1>
+      <p class="hsub">The GEMS Digital Mobile Platform — turning everyday connectivity into healthcare access, member rewards, and a GEMS-branded ecosystem. Not a telecom product. A healthcare engagement engine.</p>
+      <div class="hbtns">
+        <a href="#usecases" class="btp">Explore Use Cases →</a>
+        <a href="#models" class="btg">View Pricing Models</a>
+      </div>
+      <div class="hstats">
+        <div><div class="snum">20–40%</div><div class="slbl">ARPU increase via layered VAS</div></div>
+        <div><div class="snum">3×</div><div class="slbl">Higher LTV with bundled VAS</div></div>
+        <div><div class="snum">10</div><div class="slbl">Differentiated GEMS use cases</div></div>
+        <div><div class="snum">71%</div><div class="slbl">More loyal via personalisation</div></div>
+      </div>
+    </div>
+    <div class="hv">
+      <div class="pglow"></div>
+      <div class="pf">
+        <div class="ph">
+          <div class="ps"><span>9:41</span><span>▲▲ ▪</span></div>
+          <div class="pw">Welcome back</div>
+          <div class="pb2">GEMS MOBILE</div>
+        </div>
+        <div class="pbd">
+          <div class="pbc">
+            <div class="bll">Health Data Balance</div>
+            <div class="bln">3.8 GB</div>
+            <div class="bls">of 5 GB · GEMS Care Connect</div>
+          </div>
+          <div class="pr"><span class="prl">Wellness rewards</span><span class="tg">+480 MB</span></div>
+          <div class="pr"><span class="prl">Zero-rated GEMS app</span><span class="tt">✓ Active</span></div>
+          <div class="pr"><span class="prl">Health check streak</span><span class="prv">4 weeks →</span></div>
+          <div class="pr"><span class="prl">Cybersecurity</span><span class="prv">Protected</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="div" class="locked-hidden" style="height:1px;background:var(--border);"></div>
+
+<!-- DSG -->
+<section id="dsg" class="dk locked-hidden">
+  <div class="si" style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;max-width:1200px;margin:0 auto;padding:5rem 2rem;">
+    <div>
+      <div class="sl" style="color:var(--teal-l)">About DSG / Broadbrand</div>
+      <h2 class="sh2" style="color:white">25+ years building Africa's telco future</h2>
+      <p style="color:rgba(255,255,255,.55);font-size:.9rem;line-height:1.7;margin-bottom:2rem">From founding in 1998 to launching Africa's leading MVNE platform, DSG and Broadbrand bring deep operational expertise, award-winning CX capability, and proven MVNO success across the continent.</p>
+      <div class="tl">
+        <div class="tl-i"><div class="ty">1998</div><div class="tt2">Founded — CXG, UPay, UFreight, DigitalMall established</div></div>
+        <div class="tl-i"><div class="ty">2000</div><div class="tt2">FTSE 250 listed entity</div></div>
+        <div class="tl-i"><div class="ty">2006–2008</div><div class="tt2">Cell One Namibia (GSM) · Sasatel Tanzania (CDMA) · Broadband Company Uganda (WiMAX)</div></div>
+        <div class="tl-i"><div class="ty">2012</div><div class="tt2">Broadbrand launched</div></div>
+        <div class="tl-i"><div class="ty">2013</div><div class="tt2">MVNE — Mobile Virtual Network Enabler launched</div></div>
+        <div class="tl-i"><div class="ty">2018</div><div class="tt2">Digital Resilience launched</div></div>
+        <div class="tl-i"><div class="ty">2024</div><div class="tt2">eInsurer — Cyber Insurance launched</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="sg" style="margin-top:0">
+        <div class="sc"><div class="num">1,000+</div><div class="lbl">Contact centre seats, JHB &amp; Cape Town</div></div>
+        <div class="sc"><div class="num">6</div><div class="lbl">Office locations across Africa &amp; Seychelles</div></div>
+        <div class="sc"><div class="num">10+</div><div class="lbl">Industry sectors served</div></div>
+        <div class="sc"><div class="num">25+</div><div class="lbl">Years of telco &amp; CX expertise</div></div>
+      </div>
+      <div style="margin-top:1.5rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:1.25rem">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35);margin-bottom:.6rem">Awards &amp; Recognition</div>
+        <p style="font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.7">Contact Centre World Silver &amp; Gold · BPESA National Winner · CCMG 1st Place 2017 · 2019 Engage Awards · CXA Customer Experience Africa · BPESA Alchemy 2025 · MMA Smarties SA Finalist 2025</p>
+      </div>
+      <div style="margin-top:1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:1.25rem">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35);margin-bottom:.6rem">Key Clients</div>
+        <p style="font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.7"><strong style="color:rgba(255,255,255,.6)">Financial:</strong> Capitec · FNB · Standard Bank · Investec · Santam<br><strong style="color:rgba(255,255,255,.6)">Telco:</strong> MTN · Vodacom · Telkom · Rain · Kliq · Telecom Namibia<br><strong style="color:rgba(255,255,255,.6)">QSR:</strong> KFC · Nando's · Starbucks · Steers · Debonairs</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY MVNOs -->
+<section id="why" class="locked-hidden lt">
+  <div class="si">
+    <div class="sl">Why MVNOs Matter</div>
+    <h2 class="sh2">MVNOs are no longer side projects.<br>They are strategic digital brands.</h2>
+    <p class="sint">Success requires more than network access or a clever app. It takes alignment across five dimensions — and GEMS is uniquely positioned to execute on all five.</p>
+    <div class="mr">
+      <div class="mb2"><div class="num">40%+</div><div class="lbl">Churn common without great CX — MVNO Nation Study</div></div>
+      <div class="mb2"><div class="num">20–40%</div><div class="lbl">ARPU increase through layered VAS</div></div>
+      <div class="mb2"><div class="num">3×</div><div class="lbl">Higher LTV per user with bundled VAS</div></div>
+      <div class="mb2"><div class="num">71%</div><div class="lbl">More likely to report loyalty via personalisation — Zendesk</div></div>
+    </div>
+    <div class="fd">
+      <div class="dc"><div class="di">📡</div><div class="dt">CVP</div><div class="dd">A value proposition that resonates deeply with your target audience. Not connectivity — relevance.</div></div>
+      <div class="dc"><div class="di">📊</div><div class="dt">Marketing</div><div class="dd">Scalable, data-driven customer acquisition and retention. AI-powered campaigns that scale.</div></div>
+      <div class="dc"><div class="di">💎</div><div class="dt">Customer Value</div><div class="dd">Maximise ARPU, engagement, and brand lifetime value through smart segmentation and CVM.</div></div>
+      <div class="dc"><div class="di">✨</div><div class="dt">Customer Experience</div><div class="dd">Frictionless, digital-first and emotionally intelligent — from onboarding to loyalty journeys.</div></div>
+      <div class="dc"><div class="di">🔗</div><div class="dt">VAS</div><div class="dd">Smart service bundling that unlocks loyalty and margin. Every service is a reason to stay.</div></div>
+    </div>
+    <div class="cb">
+      <div>
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.5rem">The MVNO Fallacy</div>
+        <p style="font-size:.875rem;color:rgba(255,255,255,.55);line-height:1.6"><strong style="color:rgba(255,255,255,.7)">NOT</strong> just about tech · <strong style="color:rgba(255,255,255,.7)">NOT</strong> about copying the MNO · <strong style="color:rgba(255,255,255,.7)">NOT</strong> enough to launch with low prices.<br><strong style="color:rgba(255,255,255,.85)">IS</strong> about building a business with its own brand logic, customer segments, and economics.</p>
+      </div>
+      <div class="ct">"MVNOs don't compete on price. They win on value." <span style="font-size:.9rem;color:rgba(255,255,255,.35)">— #DoingSomethingGreat</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CVP -->
+<section id="cvp" class="locked-hidden al">
+  <div class="si">
+    <div class="sl">Customer Value Proposition</div>
+    <h2 class="sh2">Great CVPs don't just sell connectivity.<br>They sell relevance.</h2>
+    <p class="sint">The CVP is GEMS's strategic weapon. It must align with brand equity, how members access healthcare, and South Africa's unmet digital health needs.</p>
+    <div style="background:var(--dark);color:white;border-radius:16px;padding:2rem 2.5rem;text-align:center;margin-bottom:3rem;font-family:'Playfair Display',serif;font-size:1.05rem;font-style:italic;line-height:1.7">
+      "AN MVNO IS A DIGITAL DELIVERY PLATFORM OFFERING UNPRECEDENTED VALUE, ANALYTICS &amp; ENGAGEMENT"
+    </div>
+    <div class="cg">
+      <div class="nc2">
+        <div class="ncd"><div class="nb2">1</div><div class="ncc"><h4>High Perceived Value, Low Comparative Cost</h4><p>2GB data retail value R160/pm vs R39 actual cost — an extraordinary rewards mechanism for healthy member behaviour.</p></div></div>
+        <div class="ncd"><div class="nb2">2</div><div class="ncc"><h4>Passive Behavioural Data Collection</h4><p>The SIM becomes a health data asset enabling one-to-one personalised member engagement and smarter healthcare decisions.</p></div></div>
+        <div class="ncd"><div class="nb2">3</div><div class="ncc"><h4>Greater Member Entanglement</h4><p>Deep daily integration into healthcare access reduces churn and dramatically increases member engagement and lifetime value.</p></div></div>
+        <div class="ncd"><div class="nb2">4</div><div class="ncc"><h4>National Healthcare Ecosystem Growth</h4><p>A vehicle to stimulate preventative care, provider connectivity, claims reduction, and health equity at scale.</p></div></div>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:.95rem;color:#2D3748;margin-bottom:1.25rem">CVP Validation Framework</div>
+        <table class="vt">
+          <tr><td>Offering</td><td>Is the offering differentiated — not just cheaper?</td></tr>
+          <tr><td>Value</td><td>Can we prove value through case studies or trials?</td></tr>
+          <tr><td>Alignment</td><td>Are we aligned with member segment expectations?</td></tr>
+          <tr><td>Goals</td><td>Does the CVP support long-term brand and margin goals?</td></tr>
+        </table>
+        <div style="font-weight:700;font-size:.95rem;color:#2D3748;margin-bottom:1rem">Combined CVP Advantages</div>
+        <div class="ag">
+          <div class="ac"><h4>Non-comparative Proposition</h4><p>GEMS's healthcare relationship embedded in connectivity — competitors can't replicate it.</p></div>
+          <div class="ac"><h4>Greater Member Insight</h4><p>Rich behavioural data from SIM usage enables smarter products and personalised health offers.</p></div>
+          <div class="ac"><h4>Improved Security</h4><p>Bundled cybersecurity and identity tools protect members while differentiating GEMS.</p></div>
+          <div class="ac"><h4>Converged Content</h4><p>Zero-rated health services + wellness tools + loyalty create a daily-use health super platform.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VAS -->
+<section id="vas" class="locked-hidden dk">
+  <div class="si">
+    <div class="sl">Value-Added Services</div>
+    <h2 class="sh2">VAS = Revenue + Differentiation + Retention</h2>
+    <p class="sint">MVNOs win when they monetise beyond connectivity. A single VAS can be the reason a subscriber stays — or leaves. GEMS has the ecosystem to stack unique VAS no pure telco can replicate.</p>
+    <div class="vo">
+      <div class="oc"><div class="oi">📈</div><div><h4>New Revenue</h4><p>Insurance, OTT, Security, eSIM</p></div></div>
+      <div class="oc"><div class="oi">🧲</div><div><h4>Stickiness</h4><p>Loyalty, Device Finance, Safe Family</p></div></div>
+      <div class="oc"><div class="oi">💰</div><div><h4>Higher Margins</h4><p>Digital-only, low support cost</p></div></div>
+      <div class="oc"><div class="oi">🔁</div><div><h4>Lower Churn</h4><p>Relevant services = daily use</p></div></div>
+    </div>
+    <div class="vc">
+      <div class="vcard"><div class="vi">🏥</div><h4>Mobile Health Services</h4><p>Telehealth, wellness rewards, medication reminders, health tracking. The natural extension of GEMS's healthcare mission.</p><div class="vtgs"><span class="vtg">Revenue</span><span class="vtg">Stickiness</span></div></div>
+      <div class="vcard"><div class="vi">🔒</div><h4>Cybersecurity &amp; Parental Controls</h4><p>Bitdefender #1 ranked protection, Africa exclusive via Digital Resilience. Antivirus, VPN, parental controls.</p><div class="vtgs"><span class="vtg">Revenue</span><span class="vtg">Stickiness</span></div></div>
+      <div class="vcard"><div class="vi">🛡️</div><h4>Personal Cyber Insurance</h4><p>eInsurer — theft of funds, ID theft, cyberbullying, ransomware. Three tiers: MEGA, GIGA, TERA.</p><div class="vtgs"><span class="vtg">Revenue</span><span class="vtg vtgo">High Margin</span></div></div>
+      <div class="vcard"><div class="vi">🚗</div><h4>Driver Safety &amp; Telematics</h4><p>Sentiance on-device AI — driving scores, crash detection, lifestyle insights. Used by Uber, Absa, State Farm.</p><div class="vtgs"><span class="vtg">Revenue</span><span class="vtg vtgo">Differentiation</span></div></div>
+      <div class="vcard"><div class="vi">📶</div><h4>eSIM &amp; Roaming Packs</h4><p>Dual eSIM for local + global coverage. Essential for government employees travelling across regions and internationally.</p><div class="vtgs"><span class="vtg">Revenue</span><span class="vtg vtgo">Cross-border</span></div></div>
+      <div class="vcard"><div class="vi">🎮</div><h4>Loyalty &amp; Cashback</h4><p>Gamified rewards — points, streaks, levels. Powered by Xanite's real-time campaign engine.</p><div class="vtgs"><span class="vtg">Retention</span><span class="vtg">Stickiness</span></div></div>
+      <div class="vcard"><div class="vi">❤️</div><h4>Health &amp; Wellness</h4><p>Telehealth, fitness, mental wellbeing — turning the SIM into a daily health companion for GEMS members.</p><div class="vtgs"><span class="vtg">Retention</span><span class="vtg">Stickiness</span></div></div>
+      <div class="vcard"><div class="vi">🏢</div><h4>SME &amp; Provider Tools</h4><p>Email, CRM, invoicing — a productivity suite for healthcare providers and SMEs in the GEMS network.</p><div class="vtgs"><span class="vtg">Revenue</span><span class="vtg vtgo">High Margin</span></div></div>
+    </div>
+    <div style="font-weight:700;font-size:1rem;color:white;margin-bottom:1.25rem">Global VAS Benchmarks</div>
+    <table class="dt2 dtd">
+      <thead><tr><th>Operator</th><th>Country</th><th>VAS Strategy</th></tr></thead>
+      <tbody>
+        <tr><td>M-Pesa</td><td>Kenya</td><td>$900M+ revenue from nano-loans and mobile wallets</td></tr>
+        <tr><td>Jio</td><td>India</td><td>Bundles OTT (Disney+, Netflix, JioCinema) to boost retention</td></tr>
+        <tr><td>DStv Internet</td><td>SA/Africa</td><td>Bundles satellite TV and LTE connectivity</td></tr>
+        <tr><td>Telkomsel</td><td>Indonesia</td><td>Health platform bundled with SIMs</td></tr>
+        <tr><td>Verizon Cloud</td><td>USA</td><td>Monetises peace-of-mind with paid backups</td></tr>
+        <tr><td>Tesco Mobile</td><td>UK</td><td>Ties loyalty points to top-ups, drives retail synergy</td></tr>
+      </tbody>
+    </table>
+    <!-- Bitdefender -->
+    <div style="margin-top:3rem;padding-top:3rem;border-top:1px solid rgba(255,255,255,.07)">
+      <div class="sl" style="color:var(--teal-l)">Cybersecurity as a VAS</div>
+      <p style="color:rgba(255,255,255,.55);font-size:.9rem;margin-bottom:2rem;max-width:640px">Cybersecurity is now a must-have, not a nice-to-have. DSG holds exclusive Africa distribution rights for Bitdefender via Digital Resilience.</p>
+      <div class="tc">
+        <div>
+          <div class="stt">Multi-Access Security Suite</div>
+          <ul class="fl">
+            <li>Advanced antivirus and malware protection</li>
+            <li>Safe browsing and real-time threat detection</li>
+            <li>Identity protection and online privacy</li>
+            <li>Secure VPN for encrypted connectivity</li>
+            <li>Single app with unified protection</li>
+            <li>Cross-platform: Windows · Android · iOS · Chromebook</li>
+            <li>Globally recognised, #1 ranked device and online protection</li>
+          </ul>
+        </div>
+        <div>
+          <div class="stt">Bitdefender Parental Controls</div>
+          <ul class="fl">
+            <li>App filtering and blocking</li>
+            <li>Screen time and time-of-day usage limits</li>
+            <li>Web filtering and content categorisation</li>
+            <li>Location tracking and geofencing alerts</li>
+            <li>Activity reports and child digital behaviour insights</li>
+            <li>Centralised management across all child devices</li>
+          </ul>
+          <div style="margin-top:1.25rem;background:rgba(0,169,165,.08);border:1px solid rgba(0,169,165,.2);border-radius:10px;padding:1rem">
+            <div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--teal-l)">66%</div>
+            <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-top:.2rem">of parents worry about what apps their children are using</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- eInsurer -->
+    <div style="margin-top:3rem;padding-top:3rem;border-top:1px solid rgba(255,255,255,.07)">
+      <div class="sl" style="color:var(--teal-l)">eInsurer — Personal Cyber Insurance</div>
+      <p style="color:rgba(255,255,255,.55);font-size:.9rem;margin-bottom:2rem;max-width:640px">Comprehensive cyber protection for individuals &amp; families — perfectly aligned to MVNO value bundles.</p>
+      <div class="tc">
+        <ul class="fl">
+          <li>Theft of funds via mobile banking or digital wallets</li>
+          <li>Identity theft and document fraud</li>
+          <li>Cyberbullying and online harassment</li>
+          <li>Cyber extortion and ransomware</li>
+          <li>Data loss and device compromise</li>
+          <li>Trauma counselling and school relocation for affected children</li>
+        </ul>
+        <div>
+          <div class="stt">Tiered Modules</div>
+          <div class="tcs">
+            <div class="tcc"><div class="tcn">MEGA</div><div class="tcd">Theft of funds</div></div>
+            <div class="tcc"><div class="tcn">GIGA</div><div class="tcd">Theft + ID Theft + Cyberbullying</div></div>
+            <div class="tcc"><div class="tcn">TERA</div><div class="tcd">Full coverage incl. privacy &amp; liability</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section class="locked-hidden al">
+  <div class="si">
+    <div class="sl">Technology Partners</div>
+    <h2 class="sh2">The ecosystem that powers GEMS Mobile</h2>
+    <p class="sint">DSG brings an exclusive partner ecosystem that no competitor can replicate — from Africa's only Bitdefender distributor to the world's leading on-device telematics AI.</p>
+    <div class="pg">
+      <div class="pc"><div class="pi">🧠</div><div class="ps2">On-device AI Telematics</div><h3>Sentiance</h3><p>Focuses on the driver, not the vehicle. Driving scores, crash detection, 64 segment types, 60+ venue types. Mobility and lifestyle insights delivered entirely on-device.</p><div class="ptgs"><span class="pt">Insurance</span><span class="pt">Ride-hail</span><span class="pt">Family Safety</span><span class="pt">Mobility Insights</span></div><div class="pcl">Global clients: Uber · Delivery Hero · Careem · Absa · State Farm · Samsung · Microsoft</div></div>
+      <div class="pc"><div class="pi">📱</div><div class="ps2">Light MVNO Launch Platform</div><h3>Digital Mobile</h3><p>A platform for launching light MVNOs quickly. Launch in weeks, not months. API-first architecture, dual eSIM capability, VAS-ready with pre-integrated cybersecurity, fintech, OTT and loyalty.</p><div class="ptgs"><span class="pt">2 months to launch</span><span class="pt">R250K build cost</span><span class="pt">Dual eSIM</span><span class="pt">VAS-ready</span></div></div>
+      <div class="pc"><div class="pi">⚙️</div><div class="ps2">The MVNO Value Engine</div><h3>Xanite CVM</h3><p>Real-time segmentation, CDR-driven triggers, automated campaign execution, gamified loyalty. Multi-channel: WhatsApp, SFMC, SMS, USSD. No dev team needed. AI Copilot on roadmap.</p><div class="ptgs"><span class="pt">Dynamic Segmentation</span><span class="pt">WhatsApp</span><span class="pt">AI Copilot</span><span class="pt">Gamification</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section id="usecases" class="locked-hidden lt">
+  <div class="si">
+    <div class="sl">GEMS Use Cases</div>
+    <h2 class="sh2">A unique value proposition for GEMS</h2>
+    <p class="sint">"Your Members. Your Care. Your Connected Future." — GEMS positioned not as a telecom provider, but as the GEMS Digital Healthcare Engagement Platform. Not a telecom product. It's a healthcare access and cost optimisation engine embedded into everyday connectivity.</p>
+    <div class="ug">
+      <div class="uc"><div class="uch"><div class="ui">🏥</div><div><h3>GEMS Member Access SIM — Healthcare Access Layer</h3></div></div><p>A branded SIM/eSIM enabling always-on access to GEMS healthcare services. Zero-rated GEMS app, claims, authorisations, and digital services. Reduced reliance on call centres.</p><div class="uout">✓ Faster access to care · Improved member experience · Increased digital adoption</div></div>
+      <div class="uc"><div class="uch"><div class="ui">💪</div><div><h3>Preventative Care &amp; Wellness Engine</h3></div></div><p>Use MVNO to drive healthier member behaviour. Data/airtime rewards for health check-ups, screenings, and vaccinations. Integration with health tracking apps and devices.</p><div class="uout">✓ Improved preventative care uptake · Reduced claims costs · Healthier member base</div></div>
+      <div class="uc"><div class="uch"><div class="ui">⭐</div><div><h3>Loyalty Programme Enhancement Layer</h3></div></div><p>Connectivity embedded into loyalty programmes. Data/airtime rewards as loyalty currency. Tier-based connectivity benefits linked to GEMS membership plan level.</p><div class="uout">✓ Strong loyalty engagement · Increased lifetime value · Higher digital adoption</div></div>
+      <div class="uc"><div class="uch"><div class="ui">💊</div><div><h3>Chronic Care &amp; Medication Adherence Platform</h3></div></div><p>Support members with chronic conditions through connected care. Reminders for medication and appointments. Connectivity for remote consultations. Adherence incentives.</p><div class="uout">✓ Improved health outcomes · Reduced hospitalisations · Lower cost of care</div></div>
+      <div class="uc"><div class="uch"><div class="ui">🏛️</div><div><h3>Government Employee Salary Integration</h3></div></div><p>MVNO bundled into government employee benefits linked to GEMS membership. Monthly data/airtime linked to membership. Tiered benefits aligned to plan level.</p><div class="uout">✓ Built-in value layer for all public sector employees</div></div>
+      <div class="uc"><div class="uch"><div class="ui">🩺</div><div><h3>Healthcare Provider Connectivity Layer</h3></div></div><p>Connectivity for clinics, hospitals, and practitioners within the GEMS network. Provider SIMs, real-time claims processing, digital authentication and communication.</p><div class="uout">✓ Faster service delivery · Reduced admin delays · Improved provider experience</div></div>
+      <div class="uc"><div class="uch"><div class="ui">🌍</div><div><h3>Rural &amp; Underserved Healthcare Enablement</h3></div></div><p>Leverage MVNO to extend healthcare access into rural and underserved areas. Mobile clinic connectivity, remote consultation support, member access in low-connectivity regions.</p><div class="uout">✓ Increased healthcare access · Reduced travel/wait times · Improved national coverage</div></div>
+      <div class="uc"><div class="uch"><div class="ui">🚨</div><div><h3>Emergency &amp; Critical Care Connectivity</h3></div></div><p>Connectivity supporting emergency response and critical care coordination. Emergency contact functionality, location-based assistance, real-time communication channels.</p><div class="uout">✓ Faster emergency response · Improved patient outcomes · Enhanced member safety</div></div>
+      <div class="uc"><div class="uch"><div class="ui">📚</div><div><h3>Member Engagement &amp; Education Platform</h3></div></div><p>Turn connectivity into a continuous engagement channel. Zero-rated health education content. Preventative care campaigns. Personalised health messaging for all members.</p><div class="uout">✓ Better-informed members · Increased programme participation · Reduced avoidable claims</div></div>
+      <div class="uc"><div class="uch"><div class="ui">👨‍👩‍👧‍👦</div><div><h3>Family &amp; Dependent Healthcare Connectivity</h3></div></div><p>Extend benefits across family members and dependents. Shared connectivity benefits. Family-based health incentives. Coverage-linked rewards for households.</p><div class="uout">✓ Increased household engagement · Stronger retention · Broader health impact</div></div>
+    </div>
+    <div style="margin-top:3rem">
+      <div style="font-weight:700;font-size:.95rem;color:#2D3748;margin-bottom:1.25rem">Example GEMS MVNO Packages</div>
+      <table class="dt2">
+        <thead><tr><th>Package</th><th>Target Customer</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td><strong>GEMS Access Connect</strong></td><td>All members</td><td>Zero-rated healthcare services</td></tr>
+          <tr><td><strong>GEMS Wellness Connect</strong></td><td>Active members</td><td>Preventative care incentives</td></tr>
+          <tr><td><strong>GEMS Chronic Connect</strong></td><td>Chronic patients</td><td>Adherence &amp; monitoring</td></tr>
+          <tr><td><strong>GEMS Family Connect</strong></td><td>Households</td><td>Shared health benefits</td></tr>
+          <tr><td><strong>GEMS Provider Connect</strong></td><td>Healthcare providers</td><td>Operational connectivity</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- EVP -->
+<section id="evp" class="locked-hidden dk">
+  <div class="si">
+    <div class="sl">Employee Value Proposition</div>
+    <h2 class="sh2">Not just an MVNO.<br>An Employee Engagement Platform with connectivity embedded.</h2>
+    <p class="sint">Mobile data becomes a reward, a benefit, and a loyalty currency. GEMS can deploy a unified employee super app that transforms workforce engagement and reduces cost of living.</p>
+    <div class="eg">
+      <div class="ep">
+        <div class="epc"><h4>1 · Reduce Cost of Living</h4><p>Value data, voice, family SIMs, device finance, eSIM benefits + cybersecurity protection built in.</p></div>
+        <div class="epc"><h4>2 · Reward the Right Behaviour</h4><p>Earn data for performance, training, wellness, surveys, referrals. High value, low real cost.</p></div>
+        <div class="epc"><h4>3 · Unified Super App</h4><p>HR self-service, payslips, comms, intranet, wellness, gamification, learning, identity.</p></div>
+        <div class="epc"><h4>4 · Safer Workforce</h4><p>Bitdefender built-in: device protection, identity monitoring, phishing awareness, secure auth.</p></div>
+        <div class="epc"><h4>5 · Workforce Intelligence</h4><p>POPIA-compliant behavioural insights, engagement heatmaps, campaign ROI, churn prediction.</p></div>
+      </div>
+      <div>
+        <div class="er">
+          <div class="erc"><h4>👥 For HR</h4><ul><li>Improved engagement</li><li>Measurable participation</li><li>Lower turnover</li><li>Digital workforce enablement</li></ul></div>
+          <div class="erc"><h4>💼 For CFO</h4><ul><li>Low CapEx model</li><li>Predictable OpEx</li><li>Revenue share potential</li><li>Lower cost-to-serve via digital</li></ul></div>
+          <div class="erc"><h4>🎯 For CEO</h4><ul><li>Defensive digital positioning</li><li>Data ownership</li><li>Workforce loyalty moat</li><li>Platform expansion capability</li></ul></div>
+        </div>
+        <div style="margin-top:1.5rem;background:rgba(0,169,165,.08);border:1px solid rgba(0,169,165,.2);border-radius:12px;padding:1.25rem">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35);margin-bottom:.75rem">Mobile data becomes:</div>
+          <div style="display:flex;gap:1.5rem">
+            <div style="text-align:center;flex:1"><div style="font-size:1.5rem;margin-bottom:.25rem">🏆</div><div style="font-size:.8rem;font-weight:600;color:var(--teal-l)">A reward</div></div>
+            <div style="text-align:center;flex:1"><div style="font-size:1.5rem;margin-bottom:.25rem">🎁</div><div style="font-size:.8rem;font-weight:600;color:var(--teal-l)">A benefit</div></div>
+            <div style="text-align:center;flex:1"><div style="font-size:1.5rem;margin-bottom:.25rem">💎</div><div style="font-size:.8rem;font-weight:600;color:var(--teal-l)">A loyalty currency</div></div>
+          </div>
+          <p style="font-size:.75rem;color:rgba(255,255,255,.4);margin-top:1rem;line-height:1.5">Powerful in South Africa where mobile data is a significant monthly expense for government employees.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CX -->
+<section class="locked-hidden al">
+  <div class="si">
+    <div class="sl">Customer Experience</div>
+    <h2 class="sh2">CX as a primary differentiator</h2>
+    <p class="sint">Today's consumer expects relevance and a ubiquitous frictionless experience across every channel. An MVNO's business design must be re-invented continuously to remain customer relevant.</p>
+    <div class="cxg">
+      <div class="cxc"><div class="cxi">👁️</div><h4>Single Customer View</h4><p>Unified profile across all channels and interactions</p></div>
+      <div class="cxc"><div class="cxi">🔗</div><h4>Integrated Channels</h4><p>Stage 3 &amp; 4 MVNO CX Maturity across all touchpoints</p></div>
+      <div class="cxc"><div class="cxi">🤖</div><h4>70%+ BOT &amp; Self-Service</h4><p>Significant interaction support without agents</p></div>
+      <div class="cxc"><div class="cxi">🎯</div><h4>Hyper-Personalised</h4><p>AI-driven campaigns tailored to individual member behaviour</p></div>
+      <div class="cxc"><div class="cxi">⚡</div><h4>On-Demand CX</h4><p>Always-on: WhatsApp, USSD, voice, app</p></div>
+      <div class="cxc"><div class="cxi">📊</div><h4>PowerBI Insights</h4><p>Data-driven decision making and campaign performance tracking</p></div>
+    </div>
+    <div style="margin-bottom:1rem;font-weight:700;color:#2D3748;font-size:.95rem">Omni-Channel Stack</div>
+    <div class="cpp">
+      <span class="cp">Voice (Inbound &amp; Outbound)</span><span class="cp">Email &amp; Web Forms</span><span class="cp">WhatsApp</span><span class="cp">Facebook Messenger</span><span class="cp">Instagram</span><span class="cp">Live Chat</span><span class="cp">Portals</span><span class="cp">USSD</span><span class="cp">SMS</span><span class="cp">BOT</span>
+    </div>
+    <div style="background:var(--dark);border-radius:12px;padding:1.5rem;color:white">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem">
+        <div><div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35);margin-bottom:.5rem">AI Capabilities</div><p style="font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.6">AI Agent · CSAT · Sentiment Analysis · Auto QA · Knowledge Management · PowerBI</p></div>
+        <div><div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35);margin-bottom:.5rem">Physical Capacity</div><p style="font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.6">1,000+ seats onsite/hybrid — JHB 500 · Cape Town 680</p></div>
+        <div><div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35);margin-bottom:.5rem">Integrations</div><p style="font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.6">Salesforce · SAP · ServiceNow · Zendesk · Facebook · WhatsApp · Office 365 + more</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- XANITE -->
+<section class="locked-hidden dk">
+  <div class="si">
+    <div class="sl">Xanite — The MVNO Value Engine</div>
+    <h2 class="sh2">Dynamic Segmentation.<br>Automated Campaigns. Real Results.</h2>
+    <p class="sint">Fast, measurable CVM execution — no dev team needed. Real-time segmentation, CDR-driven triggers, intelligent campaign execution, and gamified loyalty all in one platform.</p>
+    <div class="xg">
+      <div class="xc xb"><h4>Dynamic Segmentation Engine</h4><ul><li>Segment by recharge, usage, ARPU and more</li><li>Supports live preview, frozen cohorts, A/B buckets</li><li>No dev team needed</li></ul></div>
+      <div class="xc xp"><h4>Campaign Execution Layer</h4><ul><li>WhatsApp · SFMC · SMS · USSD</li><li>Multi-language template support</li><li>Built-in approval workflow</li><li>Once-off or bucketed campaigns</li></ul></div>
+      <div class="xc xv"><h4>Segment Preview &amp; Insights</h4><ul><li>Live counts and distribution charts</li><li>Targeting feedback in real-time</li><li>Fast, measurable CVM execution</li></ul></div>
+    </div>
+    <div style="font-weight:700;color:white;margin-bottom:1rem">Roadmap: Coming Soon</div>
+    <div class="rr">
+      <div class="ri"><h5>Offer Matching Engine</h5><p>Real-time, rule-based offer delivery linked to recharge &amp; usage.</p></div>
+      <div class="ri"><h5>Gamification Toolkit</h5><p>Recharge streaks, points, levels, rewards engine. Configurable via admin dashboard.</p></div>
+      <div class="ri"><h5>Lifecycle Journeys</h5><p>Automated onboarding, drop-off detection, and win-back flows.</p></div>
+      <div class="ri"><h5>AI Copilot</h5><p>Campaign suggestions, timing optimisation, predictive uplift.</p></div>
+    </div>
+    <p style="font-size:.75rem;color:rgba(255,255,255,.3);margin-top:1rem">*Roadmap shaped with early access partners. Early access: Vincent@vincentmaher.com</p>
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section id="methodology" class="locked-hidden lt">
+  <div class="si">
+    <div class="sl">Project Methodology</div>
+    <h2 class="sh2">From viability to full commercial launch in 10 months</h2>
+    <p class="sint">MVNE follows a structured engagement model with clear decision gates — combining GEMS's own business intelligence with telecommunications models to deliver a bankable 60-month business plan.</p>
+    <div style="background:var(--dark);border-radius:16px;padding:2.5rem 2rem;">
+      <div class="trk">
+        <div class="ts"><div class="td">M1–3</div><div class="tlbl"><strong>Commercial Viability</strong>Phase</div></div>
+        <div class="ts"><div class="td tg2">GATE</div><div class="tlbl"><strong>Board</strong>Approval</div></div>
+        <div class="ts"><div class="td">M4</div><div class="tlbl"><strong>Implementation</strong>Scoping</div></div>
+        <div class="ts"><div class="td">M4–7</div><div class="tlbl"><strong>Build, Integrate</strong>&amp; Test</div></div>
+        <div class="ts"><div class="td tg2">GATE</div><div class="tlbl"><strong>EXCO</strong>Approval</div></div>
+        <div class="ts"><div class="td">M8–9</div><div class="tlbl"><strong>Soft</strong>Launch</div></div>
+        <div class="ts"><div class="td tg2">GATE</div><div class="tlbl"><strong>Board</strong>Approval</div></div>
+        <div class="ts"><div class="td" style="background:var(--teal);color:var(--dark)">⭐</div><div class="tlbl"><strong>Full Commercial</strong>Launch</div></div>
+      </div>
+      <p style="font-size:.75rem;color:rgba(255,255,255,.3);text-align:center;margin-top:.5rem">These are indicative timelines and may well be shortened.</p>
+      <div style="font-weight:700;font-size:.9rem;color:white;margin:2rem 0 1rem">Project Deliverables</div>
+      <div class="dg">
+        <div class="dc2"><div class="dcode">MVP</div><div class="dtit">Minimum Viable Launch Proposition</div><div class="ddsc">Packages, deals and specific products forming the launch proposition</div></div>
+        <div class="dc2"><div class="dcode">OM</div><div class="dtit">Operating Model</div><div class="ddsc">High-level Technical Architecture &amp; relational diagram between parties</div></div>
+        <div class="dc2"><div class="dcode">GTMP</div><div class="dtit">Go-to-Market Plan</div><div class="ddsc">Sales, Distribution, Customer Care and Subscriber Lifecycle Management</div></div>
+        <div class="dc2"><div class="dcode">ICX</div><div class="dtit">Integrated Customer Experience</div><div class="ddsc">Customer Journeys and high-level business processes</div></div>
+        <div class="dc2"><div class="dcode">BM</div><div class="dtit">60-Month Business Plan</div><div class="ddsc">Granular commercial viability analysis with full sensitivity analysis</div></div>
+      </div>
+      <div style="font-weight:700;font-size:.9rem;color:white;margin:2rem 0 1rem">Operating Model</div>
+      <div class="om">
+        <div class="oc2"><h4>GEMS — Brand &amp; GTM</h4><ul><li>Loyalty programme management</li><li>Marketing &amp; promotions</li><li>Sales &amp; distribution</li><li>Credit relationship</li><li>Vetting &amp; collections</li></ul></div>
+        <div class="oc2"><h4>MVNE (DSG) — Operations</h4><ul><li>Technical &amp; network operations</li><li>Subscriber management</li><li>Logistics &amp; procurement</li><li>Inbound customer care</li><li>Billing &amp; invoicing</li></ul></div>
+        <div class="oc2"><h4>MTN — Infrastructure</h4><ul><li>Network infrastructure</li><li>Wholesale billing</li><li>SIM card procurement</li><li>Voucher distribution</li></ul></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="models" class="locked-hidden al">
+  <div class="si">
+    <div class="sl">Engagement Models &amp; Pricing</div>
+    <h2 class="sh2">Three paths to launch GEMS Mobile</h2>
+    <p class="sint">Choose the model that fits GEMS's timeline, investment appetite, and brand requirements. Charged at whichever is higher — monthly minimum or per-subscriber cost.</p>
+    <div class="prg">
+      <div class="prc"><h3>Option 1 — Full MVNO</h3><div class="psub">R2.7M build cost · Brand new MVNO · 6 months to launch</div><div class="pm">R400K</div><div class="pp">/month minimum</div><ul class="pfl"><li>R12 per subscriber/month</li><li>Your own network name</li><li>Fully branded SIM card</li><li>Complete operational control</li></ul></div>
+      <div class="prc rec"><div class="rb">Recommended</div><h3>Option 2 — Digital Mobile Partnership</h3><div class="psub">R250K build cost · 2 months to launch · fastest path to market</div><div class="pm">R75K</div><div class="pp">/month minimum</div><ul class="pfl"><li>R7.50 per subscriber/month</li><li>Digital Mobile network</li><li>Branded or Digital Mobile SIM</li><li>VAS pre-integrated from day one</li></ul></div>
+      <div class="prc"><h3>Option 3 — Technology Only</h3><div class="psub">TBD solution dependent · Brand new MVNO · 6 months to launch</div><div class="pm">R200–400K</div><div class="pp">/month minimum</div><ul class="pfl"><li>R4.50–R12 per subscriber/month</li><li>Solution dependent branding</li><li>Modular — optional OSS/BSS/PCRF</li><li>Technology ownership</li></ul></div>
+    </div>
+    <table class="svct">
+      <thead><tr><th>Service</th><th>Full MVNO</th><th>Digital Mobile</th><th>Technology Only</th></tr></thead>
+      <tbody>
+        <tr><td>OSS / BSS / PCRF / OCS / IPaaS</td><td><span class="ck">✓ All included</span></td><td><span class="ck">✓ All included</span></td><td><span class="op">Optional</span></td></tr>
+        <tr><td>HLR</td><td><span class="cx2">Not included</span></td><td><span class="cx2">Not included</span></td><td><span class="cx2">Not included</span></td></tr>
+        <tr><td>CVM (Xanite)</td><td><span class="op">Optional add-on</span></td><td><span class="op">Optional add-on</span></td><td><span class="op">Optional add-on</span></td></tr>
+        <tr><td>Marketing as a Service</td><td><span class="op">Optional add-on</span></td><td><span class="op">Optional add-on</span></td><td><span class="op">Optional add-on</span></td></tr>
+        <tr><td>Finance as a Service</td><td><span class="op">Optional add-on</span></td><td><span class="op">Optional add-on</span></td><td><span class="op">Optional add-on</span></td></tr>
+        <tr><td>GM as a Service</td><td><span class="op">Optional add-on</span></td><td><span class="op">Optional add-on</span></td><td><span class="op">Optional add-on</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="contact" class="locked-hidden ctas">
+  <h2>Ready to build GEMS Mobile?</h2>
+  <p>Let's start the commercial viability phase. The GEMS member ecosystem is already built. The MVNO layer turns it into a healthcare access and engagement engine that extends reach, drives wellbeing, and creates recurring value tied to health outcomes.</p>
+  <div class="ctab">
+    <a href="mailto:support@dsg.co.za" class="bw">Contact DSG / Broadbrand →</a>
+    <a href="#methodology" class="bow">View Methodology</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="locked-hidden">
+  <div class="fi">
+    <div class="ft">
+      <div class="fb">
+        <div style="background:rgba(255,255,255,0.12);border-radius:10px;padding:8px 14px;display:inline-block;margin-bottom:0.75rem;">
+        <svg viewBox="0 0 240 60" xmlns="http://www.w3.org/2000/svg" height="38" style="display:inline-block;vertical-align:middle;">
+  <text x="2" y="52" font-family="Georgia,Arial Black,sans-serif" font-weight="900" font-size="56" fill="#1A202C" letter-spacing="-2">2</text>
+  <g transform="translate(57,12)">
+    <circle cx="11" cy="0" r="4.5" fill="#E63329"/><circle cx="19" cy="5" r="4" fill="#E63329"/>
+    <circle cx="22" cy="14" r="4" fill="#F4821F"/><circle cx="19" cy="23" r="4" fill="#F4821F"/>
+    <circle cx="11" cy="28" r="4.5" fill="#5CB85C"/><circle cx="3" cy="23" r="4" fill="#5CB85C"/>
+    <circle cx="0" cy="14" r="4" fill="#00A9A5"/><circle cx="3" cy="5" r="4" fill="#1B4F9E"/>
+    <text x="6" y="19" font-family="Georgia,serif" font-weight="700" font-size="10" fill="white" text-anchor="middle">20</text>
+  </g>
+  <text x="85" y="38" font-family="Georgia,Arial,sans-serif" font-weight="700" font-size="30" fill="#1A202C" letter-spacing="-0.5">gems</text>
+  <line x1="85" y1="43" x2="238" y2="43" stroke="rgba(0,0,0,0.12)" stroke-width="0.6"/>
+  <text x="85" y="54" font-family="Arial,sans-serif" font-size="8.5" fill="#718096" letter-spacing="0.3">Government Employees Medical Scheme</text>
+</svg>
+        </div>
+        <p>A DSG / Broadbrand initiative in partnership with MTN. Workshop — 21 April 2026, Johannesburg. #DoingSomethingGreat</p>
+      </div>
+      <div class="fcol"><h5>Sections</h5><ul><li><a href="#why">Why MVNOs</a></li><li><a href="#cvp">CVP</a></li><li><a href="#vas">VAS</a></li><li><a href="#usecases">GEMS Use Cases</a></li><li><a href="#evp">EVP</a></li><li><a href="#models">Engagement Models</a></li><li><a href="#methodology">Methodology</a></li></ul></div>
+      <div class="fcol"><h5>Partners</h5><ul><li><a href="#vas">Bitdefender / Digital Resilience</a></li><li><a href="#vas">eInsurer</a></li><li><a href="#vas">Sentiance</a></li><li><a href="#vas">Digital Mobile</a></li><li><a href="#vas">Xanite CVM</a></li></ul></div>
+      <div class="fcol"><h5>Contact</h5><ul><li><a href="mailto:support@dsg.co.za">support@dsg.co.za</a></li><li><a href="tel:+27117597000">+2711 759 7000</a></li><li><a href="https://dsg.co.za" target="_blank">dsg.co.za</a></li></ul></div>
+    </div>
+    <div class="fbot">
+      <span>© 2026 DSG Digital Solutions Group. Confidential — All rights reserved. GEMS MVNO Workshop · 21 April 2026</span>
+      <span class="ftag">#DoingSomethingGreat</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+function checkLock(){
+  var u=document.getElementById('lu').value.trim();
+  var p=document.getElementById('lp').value.trim();
+  if(u==='gems'&&p==='GEMS2026'){
+    document.getElementById('ls').style.display='none';
+    document.querySelectorAll('.locked-hidden').forEach(function(el){
+      el.classList.remove('locked-hidden');
+    });
+    // Ensure nav uses flex
+    document.getElementById('nav').style.display='flex';
+  } else {
+    document.getElementById('le').style.display='block';
+    document.getElementById('lp').value='';
+    document.getElementById('lp').focus();
+  }
+}
+document.addEventListener('keydown',function(e){if(e.key==='Enter')checkLock();});
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click',function(e){
+    var t=document.querySelector(this.getAttribute('href'));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'});}
+  });
+});
+</script>
+</body>
+</html>
